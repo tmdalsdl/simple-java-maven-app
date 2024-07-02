@@ -24,5 +24,39 @@ pipeline {
                 sh './jenkins/scripts/deliver.sh'
             }
         }
+        stage('Deploy') {
+            steps {
+                script {
+                    try {
+                        sh 'echo "Starting deployment process..."'
+                        // 실제 배포 스크립트를 여기에 추가
+                        // 예: sh './deploy.sh'
+                        sh 'echo "Deployment successful!"'
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Deployment failed: ${e.message}"
+                    }
+                }
+            }
+            post {
+                success {
+                    echo 'Deployment completed successfully!'
+                    // 여기에 성공 알림 로직을 추가할 수 있습니다.
+                    // 예: slackSend channel: '#devops', color: 'good', message: 'Application deployed successfully!'
+                }
+                failure {
+                    echo 'Deployment failed!'
+                    // 여기에 실패 알림 로직을 추가할 수 있습니다.
+                    // 예: slackSend channel: '#devops', color: 'danger', message: 'Deployment failed. Immediate attention required!'
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline finished execution'
+            // 여기에 파이프라인 완료 후 항상 실행할 작업을 추가할 수 있습니다.
+            // 예: cleanWs() // 워크스페이스 정리
+        }
     }
 }
